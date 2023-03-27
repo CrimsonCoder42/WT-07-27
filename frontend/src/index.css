@@ -1,0 +1,302 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+.input-container {
+  display: -ms-flexbox; /* IE10 */
+  display: flex;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.icon {
+  padding: 10px;
+  background: white;
+  color: green;
+  min-width: 50px;
+  text-align: center;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  outline: none;
+}
+
+.input-field:focus {
+  border: 2px solid dodgerblue;
+}
+
+
+@media screen and (min-width: 320px ) and (max-width: 480px) {
+  html{
+
+    width: 100vw;
+    height: 100vh;
+    font-size: 20px;
+  }
+  img {
+    width: 25vw;
+    height: 5vh;
+
+  }
+
+ 
+  .Auth-form{   
+    box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    border-radius: 0px;
+    background-color: white;
+    border: 5px solid white;
+    border-color: #c9c1b6 ;
+    width:80vw; height: 20vh; text-align:center;}
+  
+.Auth-form-title{
+  font-size: 15px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: rgb(34, 34, 34);
+  font-weight: 800;
+}
+
+.forgotpassword {
+  font-size: 10px;
+  padding-bottom: "15px";
+   padding-top: 5px;
+}
+
+.signup-container{
+  box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px;
+  padding-bottom: 5px;
+  border-radius: 0px;
+  border: 5px solid white;
+  border-color: #c9c1b6 ;
+  width:80vw; height: 40vh; text-align:center;
+  background-color: #348e47;
+  color: white;
+  padding-top: 5px;
+  justify-content: center;
+  vertical-align: center;
+}
+.noaccount{
+font-size: 15px;
+}
+
+.signupbelow{
+font-size: 15px;
+}
+.logo{ width:90px; height:60px;margin-top:10; margin-bottom:10}
+
+}
+
+@media only screen and  (min-width: 481px ) and (max-width: 768px) {
+  html{
+
+    width: 100vw;
+    height: 100vh;
+    font-size: 20px;
+  }
+  .picture{ width: 100vw;}
+ 
+  img {
+    width: 25vw;
+    height: 5vh;
+
+  }
+ 
+  .Auth-form{   
+    box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    border-radius: 0px;
+    background-color: white;
+    border: 5px solid white;
+    border-color: #c9c1b6 ;
+    width:60vw; height: 20vh; text-align:center;}
+  
+.Auth-form-title{
+  font-size: 15px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: rgb(34, 34, 34);
+  font-weight: 800;
+}
+
+.forgotpassword {
+  font-size: 10px;
+  padding-bottom: 10px;
+   padding-top: 5px;
+}
+.signup-container{
+  box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px;
+  padding-bottom: 5px;
+  border-radius: 0px;
+  border: 5px solid white;
+  border-color: #c9c1b6 ;
+  width:60vw; height: 40vh; text-align:center;
+  background-color: #348e47;
+  color: white;
+  padding-top: 5px;
+  justify-content: center;
+  vertical-align: center;
+}
+.noaccount{
+font-size: 15px;
+}
+
+.signupbelow{
+font-size: 15px;
+}
+
+  .logo{ width:120px; height:60px;margin-top:10; margin-bottom:10}
+}
+
+@media only screen and  (min-width: 768px ) and (max-width: 1024px) {
+  html{
+
+    width: 100vw;
+    height: 100vh;
+    font-size: 20px;
+  }
+  .picture{ width: 100vw; height: 10vh;}
+ 
+  img {
+    width: 30vw;
+    height: 10vh;
+
+  }
+ 
+  .Auth-form{   
+    box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    border-radius: 0px;
+    background-color: white;
+    border: 5px solid white;
+    border-color: #c9c1b6 ;
+    width:30vw; height: 50vh; text-align:center;}
+  
+.Auth-form-title{
+  font-size: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: rgb(34, 34, 34);
+  font-weight: 800;
+  margin-top: 100px;
+}
+
+.forgotpassword {
+  font-size: 12px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+   padding-top: 5px;
+}
+
+.signup-container{
+  box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px;
+  padding-bottom: 5px;
+  border-radius: 0px;
+  border: 5px solid white;
+  border-color: #c9c1b6 ;
+  width:30vw; height: 50vh; text-align:center;
+  background-color: #348e47;
+  color: white;
+  padding-top: 5px;
+  justify-content: center;
+  vertical-align: center;
+}
+.noaccount{
+  margin-top: 40px;
+font-size: 20px;
+}
+
+.signupbelow{
+font-size: 15px;
+margin: 20px;
+}
+
+  .logo{ width:120px; height:60px;margin-top:10; margin-bottom:10}
+  .rmsc {
+    margin-left:70px; width:75%;
+  }
+}
+
+@media only screen and  (min-width: 1025px ) {
+  html{
+
+    width: 100vw;
+    height: 100vh;
+    font-size: 20px;
+  }
+  .picture{ width: 100vw;}
+ 
+  img {
+    width: 25vw;
+    height: 15vh;
+
+  }
+ 
+  .Auth-form{   
+    box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    border-radius: 0px;
+    background-color: white;
+    border: 5px solid white;
+    border-color: #c9c1b6 ;
+    width:23vw; height: 50vh; text-align:center;}
+  
+.Auth-form-title{
+  font-size: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: rgb(34, 34, 34);
+  font-weight: 800;
+  margin-top: 100px;
+}
+
+.forgotpassword {
+  font-size: 12px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+   padding-top: 5px;
+}
+.signup-container{
+  box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px;
+  padding-bottom: 5px;
+  border-radius: 0px;
+  border: 5px solid white;
+  border-color: #c9c1b6 ;
+  width:23vw; height: 50vh; text-align:center;
+  background-color: #348e47;
+  color: white;
+  padding-top: 5px;
+  justify-content: center;
+  vertical-align: center;
+}
+.noaccount{
+  margin-top: 60px;
+font-size: 20px;
+}
+
+.signupbelow{
+font-size: 15px;
+margin: 20px;
+}
+.logo{ width:120px; height:60px;margin-top:10; margin-bottom:10}
+.rmsc {
+  margin-left:70px; width:75%;
+}
+}
