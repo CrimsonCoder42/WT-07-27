@@ -25,3 +25,6 @@ To run application:
    - COGNITO_REGION
    - COGNITO_USER_POOL_ID
  - python `backend/webapp/api.py`
+
+
+lambda end point https://rtvb5hreoe.execute-api.us-east-1.amazonaws.com/dev/
