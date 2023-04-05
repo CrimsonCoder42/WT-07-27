@@ -3,162 +3,91 @@
 /* eslint-disable no-console */
 /* eslint-disable no-useless-concat */
 /* eslint-disable no-undef */
-import { Form, Input } from 'antd';
+/* eslint-disable no-unused-vars, no-shadow */
+import { Form, Input, Button } from 'antd';
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbarloggedin';
 import countries from './countries.json';
 import DisabledPage from './ReactMultiSelect';
-// import Page from './EnabledDropDown'; disable dropdown having disabled be attribute you pass to one component
-
-
-// This is a custom hook that takes in a url, method and body and returns data, loading and error.
-const useFetch = (url, method = 'GET', body) => {
-    // useState hooks to manage the state of data, loading and error
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            setError(null);
-
-            try {
-                // Get token from sessionStorage
-                const token = sessionStorage.getItem('token');
-
-                // Set headers for the API call
-                const headers = {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                };
-
-                // Set options for the API call
-                const options = {
-                    method,
-                    headers,
-                }
-
-                // If there's a body, add it to the options
-                if (body) {
-                    options.body = body;
-                }
-
-                // Perform the API call and wait for response
-                // eslint-disable-next-line
-                const response = await fetch(url, {
-                    ...options
-                });
-
-                // Throw an error if the response is not ok
-                if (!response.ok) {
-                    throw new Error('Error fetching data');
-                }
-
-                // Get the response data and set the data state
-                const res = await response.json();
-                setData(res);
-
-            } catch (err) {
-
-                // Set the error state if there's an error
-                setError(err.message);
-            } finally {
-
-                // Set the loading state to false
-                setLoading(false);
-            }
-        };
-
-    // Call the fetchData function when the component mounts or when url changes
-        fetchData();
-    }, [url]);
-
-// Return the data, loading and error state as an object
-    return { data, loading, error };
-};
+import useFetch from './hooks/useFetch';
 
 // don't put jsx inside of a state
 export default function () {
+    const ACCESS_TOKEN =
+        sessionStorage.getItem('token') ||
+        'eyJraWQiOiJKUGpQNFBzOFZ5ajlNXC84dXhCVmNkcEVcLzMrTm1jNVNxbVNJTVlHY2g0NEE9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJkNjQyNDBlMy00NDkxLTQyNTItOWEyNS0yOTI0MTIyMzU2ZmEiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9KQUZLMWxoWlUiLCJjbGllbnRfaWQiOiI0ZnExNTh1ZGhyam05NGVrOTh1NGE5ZmhpMiIsIm9yaWdpbl9qdGkiOiJhYTg5YWFhMC0wN2I0LTQ5NWUtOTJlMy1iNjYyNjdiMjM0MDAiLCJldmVudF9pZCI6IjJhZjA0OWNjLTA3ZGYtNGM0NS04ZDVjLTk4NGFiZWRhZmY0YSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE2ODA3MjIyNDksImV4cCI6MTY4MDcyNTg0OSwiaWF0IjoxNjgwNzIyMjQ5LCJqdGkiOiJmZGM0MzVlZC0zOWI4LTRiZTQtYTU0Yi1lYjZhOWU5OWM0NjUiLCJ1c2VybmFtZSI6ImQ2NDI0MGUzLTQ0OTEtNDI1Mi05YTI1LTI5MjQxMjIzNTZmYSJ9.nW79KEqEtHkdgiDinR6LMg3fzLLQ89pFgA4oueWhc-J_BfCLok5LGs5_tTSDJ35ZIqE6v_OjnYaCgDlNI7VnEVYxG1AmFbdEOqHbe5yOVxgNy5ZzuqoHrRSCPCYoOwmIj56DOf1hDW9fiNTDqQ7gvS6l7AV8F7T_irQtyXsx6NP0t42K6CYUGuYx3TU9fZ3B9bEuPJYyxsCJ5sAQDhT3UC5rBaGJr3umpbvRjx3h-fdI9NRrKrb31wZcfV4BNyQnIX810mzEEDvDyM5THlDMVoDvHRMS2JI4QCzCvn2z_pIZevZSyynwIsEmDjZQbEx4rNQ-X30BHhi7zwjAjl_KoQ';
 
-    // Define state variables for profile picture, read-only mode, form, dropdown, and user profile
-    const [profilePic] = useState(
-        <i
-            class='fa fa-user fa-5x icon'
-            style={{ 'background-color': 'white', color: '#348e47' }}
-        ></i>
-    );
+    console.log(ACCESS_TOKEN)
 
-    const [isReadOnly] = useState(true);
-    const [form] = Form.useForm();
-    // const [counter, setCounter] = useState(0);
-    const [dropdown] = useState(<DisabledPage />);
-    const [userProfile, setUserProfile] = useState();
+    // Declare state variables
+    const [isEditingMode, setIsEditingMode] = useState(false);
+    const [profile, setProfile] = useState(null);
 
-    // Fetch user data from an API and update user profile state
+    // Fetch user data
     const { data, loading, error } = useFetch(
-        'https://rtvb5hreoe.execute-api.us-east-1.amazonaws.com/dev/_api/v1/get_user',
-        'GET'
+        'https://rtvb5hreoe.execute-api.us-east-1.amazonaws.com/dev/_api/v1/get_user'
     );
 
+    // Update user profile data with fetched data
     useEffect(() => {
         if (data) {
-            setUserProfile(data);
+            const userProfile = data.length && data[0] ? data[0] : null;
+            setProfile(userProfile);
         }
     }, [data]);
 
-    // Define function for deleting a user profile
-    const deletes = () => {
-        if (window.confirm('Are you sure you want to delete your profile?')) {
-            // Save it!
-            console.log('Profile has been deleted');
-            console.log(userProfile[0].id);
-        } else {
-            // Do nothing!
-            console.log('Your profile has not been deleted');
+    // Declare state variables for update profile form submission
+    const [submitLoading, setSubmitLoading] = useState(false);
+    const [submitError, setSubmitError] = useState(null);
+
+    // Function to set editing mode to false
+    const undo = function () {
+        setIsEditingMode(false);
+    };
+
+    // Function to handle form submission
+    const handleSubmit = async (values) => {
+        setSubmitLoading(true);
+        setSubmitError(null);
+
+        try {
+            const response = await fetch(
+                'https://rtvb5hreoe.execute-api.us-east-1.amazonaws.com/dev/_api/v1/update_user',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${ACCESS_TOKEN}`
+                    },
+                    body: JSON.stringify(values)
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Error updating profile');
+            }
+
+            const data = await response.json();
+
+            const userProfile = data.length && data[0] ? data[0] : null;
+
+            setProfile(userProfile);
+        } catch (error) {
+            setSubmitError(error.message);
+        } finally {
+            setSubmitLoading(false);
         }
     };
 
-    // what for????
-    // function readOnlyFx() {
-    //     if (counter === 0) {
-    //         setisReadOnly((prevState) => !prevState);
-    //         setDropdown(<Page />);
-    //
-    //         console.log(
-    //             (document.getElementsByClassName(
-    //                 'dropdown-container'
-    //             )[0].ariaReadOnly = false)
-    //         );
-    //         console.log(document.getElementsByClassName('dropdown-container')[0]);
-    //         document.getElementById('countryselect').removeAttribute('disabled');
-    //         setCounter(counter + 1);
-    //     } else {
-    //         alert('Your profile has been updated!');
-    //         console.log(userProfile);
-    //     }
-    // }
+    // Render loading spinner while data is being fetched
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
-    // Define function for submitting user profile form
-    const submitForm = async (formData) => {
-        // eslint-disable-next-line
-        const { data: responseData, error: formError } = useFetch(
-            'https://rtvb5hreoe.execute-api.us-east-1.amazonaws.com/dev/_api/v1/update_user',
-            'POST',
-            JSON.stringify({
-                ...formData,
-            })
-        );
-
-        if (formError) {
-            console.log('error', formError);
-        } else {
-            console.log(responseData);
-            setUserProfile({
-                // ... updated user profile
-            });
-        }
-    };
+    // Render error message if there is an error fetching data
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
 
     // Define function for rendering countries in a dropdown
     const renderCountries = () =>
@@ -166,20 +95,12 @@ export default function () {
             return <option value={country.name}>{country.name}</option>;
         });
 
-    // Render loading message if data is still loading
-if (loading) {
-        return <div>Loading...</div>;
-    }
 
-// Render error message if there was an error fetching data
-if (error) {
-        return <div>{error}</div>;
-    }
-
-// Render user profile form with profile picture, read-only mode, form, and dropdown
+    // Render profile page content
     return (
+        // Define the markup for profile page
         <div class='wrapper'>
-            <Form form={form}>
+            <Form onFinish={handleSubmit}>
                 <Navbar />
 
                 <div
@@ -199,10 +120,12 @@ if (error) {
                             height: '764.16px',
                         }}
                     >
+
+                        {/* Display user profile picture */}
                         <h3 style={{ color: '#348e47', 'text-align': 'center' }}>
                             <b>My WildTrack Account</b>
                         </h3>
-                        {profilePic === '' ? null : (
+
                             <span
                                 style={{
                                     fontWeight: 'bold',
@@ -210,10 +133,14 @@ if (error) {
                                     'font-size': '10px',
                                 }}
                             >
-                {profilePic}
-              </span>
-                        )}
+                <i
 
+                    className='fa fa-user fa-5x icon'
+                    style={{'background-color': 'white', color: '#348e47'}}
+                ></i>
+              </span>
+
+                        {/* Display user's first and last name */}
                         <h4
                             colon={false}
                             style={{
@@ -224,15 +151,12 @@ if (error) {
                             }}
                             name='firstnamelastname'
                             id='firstnamelastname'
-                            initialValue={
-                                userProfile.length ? userProfile.first_name : 'email'
-                            }
+                            initialValue={profile?.first_name}
+
                             label={
                                 <h4 style={{ 'text-align': 'center' }}>
                                     <b>
-                                        {userProfile.length
-                                            ? userProfile[0].firstnamelastname
-                                            : 'First and Last Name'}
+                                        {profile?.firstnamelastname}
                                     </b>
                                 </h4>
                             }
@@ -240,6 +164,7 @@ if (error) {
                             <b>First and Last Name</b>
                         </h4>
 
+                        {/* Display user's database role */}
                         <h2
                             colon={false}
                             style={{
@@ -262,6 +187,8 @@ if (error) {
                         >
                             Database Role
                         </h2>
+
+                        {/* Display user's name */}
                         <h4
                             colon={false}
                             style={{
@@ -277,6 +204,8 @@ if (error) {
                         >
                             <b>Role</b>
                         </h4>
+
+                        {/* Display user's created time */}
                         <h2
                             colon={false}
                             style={{
@@ -432,9 +361,7 @@ if (error) {
                             className='Form-label'
                             name='firstName'
                             id='firstName'
-                            initialValue={
-                                userProfile.length ? userProfile[0].firstName : 'First Name'
-                            }
+                            initialValue={profile?.firstName}
                             label={
                                 <h4 style={{ width: '180px' }}>
                                     <b>First Name</b>
@@ -442,8 +369,8 @@ if (error) {
                             }
                         >
                             <Input
+                                readOnly={!isEditingMode}
                                 maxLength={10}
-                                readOnly={isReadOnly}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='First Name'
                             />
@@ -453,9 +380,7 @@ if (error) {
                             className='Form-label'
                             name='lastName'
                             id='lastName'
-                            initialValue={
-                                userProfile.length ? userProfile[0].lastName : 'Last Name'
-                            }
+                            initialValue={profile?.lastName}
                             label={
                                 <h4 style={{ width: '180px' }}>
                                     <b>Last Name</b>
@@ -463,8 +388,8 @@ if (error) {
                             }
                         >
                             <Input
+                                readOnly={!isEditingMode}
                                 maxLength={10}
-                                readOnly={isReadOnly}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='Last Name'
                             />
@@ -475,11 +400,7 @@ if (error) {
                             className='Form-label'
                             name='Organization'
                             id='Organization'
-                            initialValue={
-                                userProfile.length
-                                    ? userProfile[0].Organization
-                                    : 'Organization'
-                            }
+                            initialValue={profile?.Organization}
                             label={
                                 <h4 style={{ width: '180px' }}>
                                     <b>Organization</b>
@@ -487,8 +408,8 @@ if (error) {
                             }
                         >
                             <Input
+                                readOnly={!isEditingMode}
                                 maxLength={10}
-                                readOnly={isReadOnly}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='Organization'
                             />
@@ -498,9 +419,7 @@ if (error) {
                             className='Form-label'
                             name='Position'
                             id='Position'
-                            initialValue={
-                                userProfile.length ? userProfile[0].Position : 'Position'
-                            }
+                            initialValue={profile?.Position}
                             label={
                                 <h4 style={{ width: '180px' }}>
                                     <b>Position</b>
@@ -508,8 +427,8 @@ if (error) {
                             }
                         >
                             <Input
+                                readOnly={!isEditingMode}
                                 maxLength={10}
-                                readOnly={isReadOnly}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='Position'
                             />
@@ -519,45 +438,40 @@ if (error) {
                             className='Form-label'
                             name='Interests'
                             id='Interests'
-                            initialValue={
-                                userProfile.length ? userProfile[0].Interests : 'Interests'
-                            }
+                            initialValue={profile?.Interests}
                             label={
                                 <h4 style={{ width: '180px' }}>
                                     <b>Interests</b>
                                 </h4>
                             }
                         >
-              <textarea
-                  class='ant-input css-dev-only-do-not-override-1km3mtt'
-                  maxLength={10}
-                  readOnly={isReadOnly}
-                  style={{
-                      'margin-left': '70px',
-                      width: '75%',
-                      height: '78px',
-                      'border-color': '#d9d9d9',
-                  }}
-                  placeholder='Interests'
-                  type='textarea'
-              />
+          <textarea
+              disabled={!isEditingMode}
+              class='ant-input css-dev-only-do-not-override-1km3mtt'
+              maxLength={10}
+              style={{
+                  'margin-left': '70px',
+                  width: '75%',
+                  height: '78px',
+                  'border-color': '#d9d9d9'
+              }}
+              placeholder='Interests'
+              type='textarea'
+          />
                         </Form.Item>
+
                         <Form.Item
                             colon={false}
                             className='Form-label'
                             name='CountryofPrimaryResidence'
                             id='CountryOfPrimaryResidence'
-                            initialValue={
-                                userProfile.length
-                                    ? userProfile[0].CountryOfPrimaryResidence
-                                    : 'Country of Primary Residence'
-                            }
+                            initialValue={profile?.CountryOfPrimaryResidence}
                             label={
                                 <h4
                                     style={{
                                         width: '180px',
                                         height: '90px',
-                                        'margin-bottom': '0',
+                                        'margin-bottom': '0'
                                     }}
                                 >
                                     <b>
@@ -571,18 +485,18 @@ if (error) {
                                 class='ant-form-item-control-input-content'
                                 style={{
                                     'margin-bottom': '0px',
-                                    'justify-content': 'space-around',
+                                    'justify-content': 'space-around'
                                 }}
                             >
                                 <select
-                                    disabled
+                                    disabled={!isEditingMode}
                                     class='ant-input css-dev-only-do-not-override-1km3mtt'
                                     name='countrieselect'
                                     id='countryselect'
                                     style={{
                                         'margin-left': '70px',
                                         width: '75%',
-                                        'border-color': '#d9d9d9',
+                                        'border-color': '#d9d9d9'
                                     }}
                                 >
                                     {renderCountries()}
@@ -595,27 +509,22 @@ if (error) {
                             className='Form-label'
                             name='FieldworkLocations'
                             id='FieldworkLocations'
-                            initialValue={
-                                userProfile.length
-                                    ? userProfile[0].FieldworkLocations
-                                    : 'Fieldwork Locations'
-                            }
+                            initialValue={profile?.FieldworkLocations}
                             label={
                                 <h4 style={{ width: '180px' }}>
                                     <b>Fieldwork Locations</b>
                                 </h4>
                             }
                         >
-                            {dropdown}
+                            <DisabledPage disabled={!isEditingMode} />
                         </Form.Item>
+
                         <Form.Item
                             colon={false}
                             className='Form-label'
                             name='LinkedIn'
                             id='LinkedIn'
-                            initialValue={
-                                userProfile.length ? userProfile[0].LinkedIn : 'LinkedIn'
-                            }
+                            initialValue={profile?.LinkedIn}
                             label={
                                 <h4 style={{ width: '180px' }}>
                                     <b>LinkedIn</b>
@@ -623,20 +532,19 @@ if (error) {
                             }
                         >
                             <Input
+                                readOnly={!isEditingMode}
                                 maxLength={10}
-                                readOnly={isReadOnly}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='LinkedIn'
                             />
                         </Form.Item>
+
                         <Form.Item
                             colon={false}
                             className='Form-label'
                             name='Facebook'
                             id='Facebook'
-                            initialValue={
-                                userProfile.length ? userProfile[0].Facebook : 'Facebook'
-                            }
+                            initialValue={profile?.Facebook}
                             label={
                                 <h4 style={{ width: '180px' }}>
                                     <b>Facebook</b>
@@ -644,20 +552,19 @@ if (error) {
                             }
                         >
                             <Input
+                                readOnly={!isEditingMode}
                                 maxLength={10}
-                                readOnly={isReadOnly}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='Facebook'
                             />
                         </Form.Item>
+
                         <Form.Item
                             colon={false}
                             className='Form-label'
                             name='Twitter'
                             id='Twitter'
-                            initialValue={
-                                userProfile.length ? userProfile[0].Twitter : 'Twitter'
-                            }
+                            initialValue={profile?.Twitter}
                             label={
                                 <h4 style={{ width: '180px' }}>
                                     <b>Twitter</b>
@@ -665,8 +572,8 @@ if (error) {
                             }
                         >
                             <Input
+                                readOnly={!isEditingMode}
                                 maxLength={10}
-                                readOnly={isReadOnly}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='Twitter'
                             />
@@ -676,25 +583,32 @@ if (error) {
 
                         <div class='containing' style={{ display: 'flex' }}>
                             <div style={{ width: '50%', margin: 'auto' }}>
-                                <button
-                                    data-toggle='modal'
-                                    data-target='#exampleModal'
-                                    type='button'
-                                    onClick={submitForm}
-                                    style={{
-                                        'border-radius': '0px',
-                                        border: 'none',
-                                        'background-color': 'green',
-                                        'padding-top': '5px',
-                                        'padding-bottom': '5px',
-                                        'padding-left': '15px',
-                                        'padding-right': '15px',
-                                        color: 'white',
-                                    }}
-                                    // edit profile 
-                                >  
-                                    Edit Profile
-                                </button>
+                                {!isEditingMode && (
+                                    <Button
+                                        type='primary'
+                                        htmlType='button'
+                                        onClick={() => setIsEditingMode(true)}
+                                    >
+                                        'Edit Profile'
+                                    </Button>
+                                )}
+
+                                {isEditingMode && (
+                                    <Button
+                                        type='primary'
+                                        htmlType='button'
+                                        onClick={undo}
+                                        loading={submitLoading}
+                                    >
+                                        'Undo'
+                                    </Button>
+                                )}
+
+                                {isEditingMode && (
+                                    <Button type='primary' htmlType='submit' loading={submitLoading}>
+                                        {submitLoading ? 'Updating...' : 'Update Profile'}
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     </div>
