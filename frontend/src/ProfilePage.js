@@ -15,81 +15,95 @@ import useFetch from './hooks/useFetch';
 export default function () {
     const ACCESS_TOKEN =
         sessionStorage.getItem('token') ||
-        'FtZSI6ImQ2NDI0MGUzLTQ0OTEtNDI1Mi05YTI1LTI5MjQxMjIzNTZmYSJ9.nW79KEqEtHkdgiQCzCvn2z_pIZevZSyynwIsEmDjZQbEx4rNQ-X30BHhi7zwjAjl_KoQ';
+        'eyJraWQiOiJKUGpQNFBzOFZ5ajlNXC84dXhCVmNkcEVcLzMrTm1jNVNxbVNJTVlHY2g0NEE9IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiI3NjFjZGNhOC03YWNiLTQ1MjEtYjYzYi1hN2Y5NjM3OThkN2EiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV9KQUZLMWxoWlUiLCJjbGllbnRfaWQiOiI0ZnExNTh1ZGhyam05NGVrOTh1NGE5ZmhpMiIsIm9yaWdpbl9qdGkiOiJmOTYwMjZhNS1iMTEwLTQzYmUtODFmYS1iNDBlNTFlYjU2YzIiLCJldmVudF9pZCI6ImU2YTM1YjhkLWMyZjUtNGMwZC1hMTJkLTI4ODFhN2IwZDFkMCIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE2ODA3MzMyNDIsImV4cCI6MTY4MDczNjg0MiwiaWF0IjoxNjgwNzMzMjQyLCJqdGkiOiIyMTA0NzBmOC0yYzIzLTRjYjQtOTc0Mi1lZGZjN2E3MjdhNGQiLCJ1c2VybmFtZSI6Ijc2MWNkY2E4LTdhY2ItNDUyMS1iNjNiLWE3Zjk2Mzc5OGQ3YSJ9.aRG7yspdc08p5nJJJZfbC0gW1WpPUNNM6W6BSqMORzj1lYz49fF7D2yPL0HcqmArcnnbhbD1SNIuHwkgER9BXY1YNnp_CRJRv791zCEWnIi-m55bPFCopOEZqtSr6Fi9zRPj4HoAj4SNYN7L_ur7y9AZnPuZDkBXY2mgblwbiybcWOKzrkD3a3z013eoazfeXZCyF1HEUoMrRnZQm5wWmYmPIFL0kqQWQ_Ak2ZGC8R5PVYma7MFVWwd6p9K84edCD8oKCm35idoygNWbDQCDCZM6AT1gl3KvuZf4ap1EToKE_0n0iNj4zMCiIky91SWFZVaxqBZA_Ka0q3Wv6WmypQ';
 
-    console.log(ACCESS_TOKEN)
+    // Define a function called "deletes" that prompts the user to confirm whether they want to delete their profile
+    const deletes = () => {
+        if (window.confirm('Are you sure you want to delete your profile?')) {
+            console.log('Profile has been deleted');
+            console.log(userProfile[0].id); // Log the ID of the user profile to be deleted
+        } else {
+            console.log('Your profile has not been deleted');
+        }
+    };
 
-    // Declare state variables
+// Define state variables for the editing mode and the user profile
     const [isEditingMode, setIsEditingMode] = useState(false);
     const [profile, setProfile] = useState(null);
 
-    // Fetch user data
+// Fetch the user profile data using the useFetch hook
     const { data, loading, error } = useFetch(
         'https://rtvb5hreoe.execute-api.us-east-1.amazonaws.com/dev/_api/v1/get_user'
     );
 
-    // Update user profile data with fetched data
+// Update the profile state variable when the data changes
     useEffect(() => {
         if (data) {
-            const userProfile = data.length && data[0] ? data[0] : null;
-            setProfile(userProfile);
+            const fetchedProfile = data.length && data[0] ? data[0] : null;
+            setProfile(fetchedProfile);
         }
+        console.log(data);
     }, [data]);
 
-    // Declare state variables for update profile form submission
+// Define state variables for the submit loading status and any submit errors
     const [submitLoading, setSubmitLoading] = useState(false);
     const [submitError, setSubmitError] = useState(null);
 
-    // Function to set editing mode to false
+// Define a function to set the editing mode to false
     const undo = function () {
         setIsEditingMode(false);
     };
 
-    // Function to handle form submission
+// Define a function to handle the form submission
     const handleSubmit = async (values) => {
-        setSubmitLoading(true);
-        setSubmitError(null);
+        setSubmitLoading(true); // Set the submit loading status to true
+        setSubmitError(null); // Reset any previous submit errors
+        console.log(values);
 
         try {
+            // Send a POST request to update the user profile with the new values
             const response = await fetch(
                 'https://rtvb5hreoe.execute-api.us-east-1.amazonaws.com/dev/_api/v1/update_user',
                 {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${ACCESS_TOKEN}`
+                        Authorization: `Bearer ${ACCESS_TOKEN}`,
                     },
-                    body: JSON.stringify(values)
+                    body: JSON.stringify(values), // Send the form values as a JSON string in the request body
                 }
             );
 
             if (!response.ok) {
+                // If the response is not OK, throw an error
                 throw new Error('Error updating profile');
             }
 
-            const data = await response.json();
+            const data = await response.json(); // Parse the response JSON data
 
             const userProfile = data.length && data[0] ? data[0] : null;
 
-            setProfile(userProfile);
+            // Update the profile state with the new values entered in the form
+            setProfile({ ...profile, ...values });
         } catch (error) {
-            setSubmitError(error.message);
+            setSubmitError(error.message); // Set the submit error state variable to the error message
         } finally {
-            setSubmitLoading(false);
+            setSubmitLoading(false); // Set the submit loading status to false
+            setIsEditingMode(false); // Set the editing mode to false
         }
     };
 
-    // Render loading spinner while data is being fetched
+// If the data is loading, display a loading message
     if (loading) {
         return <div>Loading...</div>;
     }
 
-    // Render error message if there is an error fetching data
+// If there is an error, display an error message
     if (error) {
         return <div>Error: {error}</div>;
     }
 
-    // Define function for rendering countries in a dropdown
+// Define a function to render the list of countries as <option> elements
     const renderCountries = () =>
         countries.countries.map((country) => {
             return <option value={country.name}>{country.name}</option>;
@@ -100,7 +114,7 @@ export default function () {
     return (
         // Define the markup for profile page
         <div class='wrapper'>
-            <Form onFinish={handleSubmit}>
+            <Form onFinish={(values) => handleSubmit(values)}>
                 <Navbar />
 
                 <div
@@ -177,11 +191,11 @@ export default function () {
                             name='position'
                             id='position'
                             initialValue={
-                                userProfile.length ? userProfile[0].position : 'email'
+                                profile?.position || 'email'
                             }
                             label={
                                 <h2 style={{ 'font-size': '14px' }}>
-                                    {userProfile.length ? userProfile[0].position : 'Position'}
+                                    {profile?.position || 'Position'}
                                 </h2>
                             }
                         >
@@ -199,7 +213,7 @@ export default function () {
                             }}
                             name='firstnamelastname'
                             id='firstnamelastname'
-                            initialValue={userProfile.length ? userProfile[0].name : 'email'}
+                            initialValue={profile?.name || 'email'}
                             label={<h4 style={{ 'text-align': 'center' }}>Name</h4>}
                         >
                             <b>Role</b>
@@ -219,11 +233,11 @@ export default function () {
                             name='position'
                             id='position'
                             initialValue={
-                                userProfile.length ? userProfile[0].position : 'email'
+                                profile?.position || 'email'
                             }
                             label={
                                 <h4 style={{ 'font-size': '14px' }}>
-                                    {userProfile.length ? userProfile[0].position : 'Role'}
+                                    {profile?.length ? profile[0].position : 'Role'}
                                 </h4>
                             }
                         >
@@ -242,11 +256,11 @@ export default function () {
                             name='created'
                             id='created'
                             initialValue={
-                                userProfile.length ? userProfile[0].position : 'email'
+                                profile?.position || 'email'
                             }
                             label={
                                 <h2 style={{}}>
-                                    {userProfile.length ? userProfile[0].created : 'Created Time'}
+                                    {profile && profile.length ? profile[0].created : 'Created Time'}
                                 </h2>
                             }
                         >
@@ -265,11 +279,11 @@ export default function () {
                             name='position'
                             id='position'
                             initialValue={
-                                userProfile.length ? userProfile[0].position : 'email'
+                                profile?.position || 'email'
                             }
                             label={
                                 <h4 style={{ 'font-size': '14px' }}>
-                                    {userProfile.length ? userProfile[0].position : 'Role'}
+                                    {profile && profile.length ? profile[0].position : 'Role'}
                                 </h4>
                             }
                         >
@@ -288,11 +302,11 @@ export default function () {
                             name='created'
                             id='created'
                             initialValue={
-                                userProfile.length ? userProfile[0].position : 'email'
+                                profile && profile.length ? profile[0].position : 'email'
                             }
                             label={
                                 <h2 style={{}}>
-                                    {userProfile.length ? userProfile[0].created : 'Created Time'}
+                                    {profile && profile.length ? profile[0].created : 'Created Time'}
                                 </h2>
                             }
                         >
@@ -311,11 +325,11 @@ export default function () {
                             name='position'
                             id='position'
                             initialValue={
-                                userProfile.length ? userProfile[0].position : 'email'
+                                profile && profile.length ? profile[0].position : 'email'
                             }
                             label={
                                 <h4 style={{ 'font-size': '14px' }}>
-                                    {userProfile.length ? userProfile[0].position : 'Role'}
+                                    {profile && profile.length ? profile[0].position : 'Role'}
                                 </h4>
                             }
                         >
@@ -359,7 +373,7 @@ export default function () {
                         <Form.Item
                             colon={false}
                             className='Form-label'
-                            name='firstName'
+                            name='first_name'
                             id='firstName'
                             initialValue={profile?.firstName}
                             label={
@@ -373,12 +387,13 @@ export default function () {
                                 maxLength={10}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='First Name'
+                                value={profile?.first_name}
                             />
                         </Form.Item>
                         <Form.Item
                             colon={false}
                             className='Form-label'
-                            name='lastName'
+                            name='last_name'
                             id='lastName'
                             initialValue={profile?.lastName}
                             label={
@@ -392,13 +407,14 @@ export default function () {
                                 maxLength={10}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='Last Name'
+                                value={profile?.last_name}
                             />
                         </Form.Item>
 
                         <Form.Item
                             colon={false}
                             className='Form-label'
-                            name='Organization'
+                            name='organization'
                             id='Organization'
                             initialValue={profile?.Organization}
                             label={
@@ -412,12 +428,13 @@ export default function () {
                                 maxLength={10}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='Organization'
+                                value={profile?.organization}
                             />
                         </Form.Item>
                         <Form.Item
                             colon={false}
                             className='Form-label'
-                            name='Position'
+                            name='position'
                             id='Position'
                             initialValue={profile?.Position}
                             label={
@@ -431,12 +448,13 @@ export default function () {
                                 maxLength={10}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='Position'
+                                value={profile?.position}
                             />
                         </Form.Item>
                         <Form.Item
                             colon={false}
                             className='Form-label'
-                            name='Interests'
+                            name='interests'
                             id='Interests'
                             initialValue={profile?.Interests}
                             label={
@@ -522,7 +540,7 @@ export default function () {
                         <Form.Item
                             colon={false}
                             className='Form-label'
-                            name='LinkedIn'
+                            name='linkedin'
                             id='LinkedIn'
                             initialValue={profile?.LinkedIn}
                             label={
@@ -536,15 +554,16 @@ export default function () {
                                 maxLength={10}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='LinkedIn'
+                                value={profile?.linkedin}
                             />
                         </Form.Item>
 
                         <Form.Item
                             colon={false}
                             className='Form-label'
-                            name='Facebook'
+                            name='facebook'
                             id='Facebook'
-                            initialValue={profile?.Facebook}
+                            initialValue={profile?.facebook}
                             label={
                                 <h4 style={{ width: '180px' }}>
                                     <b>Facebook</b>
@@ -556,13 +575,14 @@ export default function () {
                                 maxLength={10}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='Facebook'
+                                value={profile?.twitter}
                             />
                         </Form.Item>
 
                         <Form.Item
                             colon={false}
                             className='Form-label'
-                            name='Twitter'
+                            name='twitter'
                             id='Twitter'
                             initialValue={profile?.Twitter}
                             label={
@@ -576,6 +596,7 @@ export default function () {
                                 maxLength={10}
                                 style={{ 'margin-left': '70px', width: '75%' }}
                                 placeholder='Twitter'
+                                value={profile?.twitter}
                             />
                         </Form.Item>
 
@@ -589,7 +610,7 @@ export default function () {
                                         htmlType='button'
                                         onClick={() => setIsEditingMode(true)}
                                     >
-                                        'Edit Profile'
+                                        Edit Profile
                                     </Button>
                                 )}
 
@@ -600,7 +621,7 @@ export default function () {
                                         onClick={undo}
                                         loading={submitLoading}
                                     >
-                                        'Undo'
+                                        Undo
                                     </Button>
                                 )}
 
